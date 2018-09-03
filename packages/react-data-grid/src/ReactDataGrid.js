@@ -47,6 +47,8 @@ type ColumnMetricsType = {
   minColumnWidth: number;
 };
 
+let _lastId = 0;
+
 class ReactDataGrid extends React.Component {
   static displayName = 'ReactDataGrid';
 
@@ -169,6 +171,7 @@ class ReactDataGrid extends React.Component {
   }
 
   componentWillMount() {
+    this._id = ++_lastId;
     this._mounted = true;
   }
 
@@ -1130,6 +1133,7 @@ class ReactDataGrid extends React.Component {
     return this.state.selected.active === true;
   };
 
+  genRandomRange = (min, max) => (Math.random() * (max - min + 1) | 0) + min
   setupGridColumns = (props = this.props): Array<any> => {
     const { columns } = props;
     if (this._cachedColumns === columns) {
@@ -1141,8 +1145,8 @@ class ReactDataGrid extends React.Component {
     let cols = columns.slice(0);
     let unshiftedCols = {};
     if (this.props.rowActionsCell || (props.enableRowSelect && !this.props.rowSelection) || (props.rowSelection && props.rowSelection.showCheckbox !== false)) {
-      const SelectAllComponent = this.props.selectAllRenderer || SelectAll;
-      const SelectAllRenderer = <SelectAllComponent onChange={this.handleCheckboxChange} inputRef={grid => this.selectAllCheckbox = grid} />;
+      const SelectAllComponent = this.props.selectAllRenderer || SelectAll;      
+      const SelectAllRenderer = <SelectAllComponent id={_lastId}, onChange={this.handleCheckboxChange} inputRef={grid => this.selectAllCheckbox = grid} />;
       let headerRenderer = props.enableRowSelect === 'single' ? null : SelectAllRenderer;
       let Formatter = this.props.rowActionsCell ? this.props.rowActionsCell : CheckboxEditor;
       let selectColumn = {
